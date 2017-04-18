@@ -36,83 +36,70 @@ static inline string &trim(string &s) {
 
 // Evaluates current expression using set domain.
 bool evaluateSet(string s) {
-	int parenthesisCnt = 0, bracketCnt = 0, eqCnt = 0, prevEqPos = -1, curEqPos = 0;
+	int parenthesisCnt = 0, bracketCnt = 0, expCnt = 0, prevExpPos = -1, curExpPos = 0;
 
 	// Determines number of '=' in expression
-	eqCnt = count(s.begin(), s.end(), '=');
-	if (eqCnt > 0) {
-		curEqPos = s.find_first_of('=');
+	expCnt = count(s.begin(), s.end(), '=') + count(s.begin(), s.end(), ';');
+	if (expCnt > 0) {
+		curExpPos = s.find_first_of('=');
 	}
 
-	// Evaluates each subexpression within a line, separated by '='
-	for (int i = 0; i <= eqCnt; i++) {
-		for (int j = prevEqPos+1; j < curEqPos; j++) {
+	// Evaluates each subexpression within a line, separated by '=' or ';'
+	for (int i = 0; i <= expCnt; i++) {
+		for (int j = prevExpPos + 1; j < curExpPos; j++) {
 
-			// First character must be alphanumeric, '(', or '{'
-			if (j == prevEqPos + 1) {
-				if (!isalnum(s[j])) {
-					if (s[j] != '(') {
-						if (s[j] != '{') {
-							return false;
-						}
-						else {
-							bracketCnt++;
-						}
-					}
-					else {
-						parenthesisCnt++;
-					}
-				}
-			}
-			else {
-
-				if (isalnum(s[j])) {
-					if (isalnum(s[j - 1]) || s[j - 1] == ')' || s[j - 1] == '}')
-						return false;
-				}
-				else if (s[j] == '(') {
-
+			// First character must be  '(' or '{'
+			if (j == prevExpPos + 1) {
+				if (s[j] == '(') {
 					parenthesisCnt++;
 				}
-				else if (s[j] == ')') {
-					if (parenthesisCnt == 0 || s[j - 1] == '+' || s[j - 1] == '*' || s[j - 1] == ',')
-						return false;
-					parenthesisCnt--;
-				}
 				else if (s[j] == '{') {
-
 					bracketCnt++;
-				}
-				else if (s[j] == '}') {
-					if (bracketCnt == 0 || s[j - 1] == '+' || s[j - 1] == '*' || s[j - 1] == ',')
-						return false;
-					bracketCnt--;
-				}
-				else if (s[j] == ',') {
-					if (!isalnum(s[j - 1]))
-						return false;
-				}
-				else if (s[j] == '+' || s[j] == '*') {
-					if (!isalnum(s[j - 1]) || s[j - 1] == ')' || s[j - 1] == '}')
-						return false;
 				}
 				else {
 					return false;
 				}
 			}
-		}
+			else {
+				if (isalnum(s[j])) {
+					if (s[j - 1] != '{' || s[j - 1] != ',' || (bracketCnt == 0 && s[j - 1] == ',')) return false;
+				}
+				else if (s[j] == '(') {
+					if (s[j - 1] != '+' || s[j - 1] != '*') return false;
+					parenthesisCnt++;
+				}
+				else if (s[j] == ')') {
+					if (parenthesisCnt == 0 || s[j - 1] != '}')	return false;
+					parenthesisCnt--;
+				}
+				else if (s[j] == '{') {
+					if (s[j - 1] != '+' || s[j - 1] != '*' || s[j - 1] != '(') return false;
+					bracketCnt++;
+				}
+				else if (s[j] == '}') {
+					if (bracketCnt == 0 || !isalnum(s[j - 1])) return false;
+					bracketCnt--;
+				}
+				else if (s[j] == ',') {
+					if (!isalnum(s[j - 1])) return false;
+				}
+				else if (s[j] == '+' || s[j] == '*') {
+					if (s[j - 1] != ')' || s[j - 1] != '}')	return false;
+				}
+				else {
+					return false;
+				}
+			}
 
-		// If any unclosed parentheses or bracket, invalid
-		if (parenthesisCnt != 0 || bracketCnt != 0) {
-			return false;
+			// If any unclosed parentheses or bracket or did not end with ')' or '}', invalid
+			if (parenthesisCnt != 0 || bracketCnt != 0 || s[j] != ')' || s[j] != '}') return false;
 		}
 
 		// Checks for position of next '='
-		prevEqPos = curEqPos;
-		curEqPos = s.find_first_of('=', prevEqPos+1);
-		if (curEqPos == -1) {
-			curEqPos = s.length();
-		}
+		prevExpPos = curExpPos;
+		curExpPos = s.find_first_of('=', prevExpPos+1);
+		if (curExpPos == -1) curExpPos = s.find_first_of(";", prevExpPos + 1);
+		if (curExpPos == -1) curExpPos = s.length();
 	}
 
 	// If expression has not returned false yet, it is valid.
@@ -121,16 +108,166 @@ bool evaluateSet(string s) {
 
 // Evaluates current expression using set domain.
 bool evaluateAlg(string s) {
+	int parenthesisCnt = 0, expCnt = 0, prevExpPos = -1, curExpPos = 0;
+
+	// Determines number of '=' in expression
+	expCnt = count(s.begin(), s.end(), '=') + count(s.begin(), s.end(), ';');
+	if (expCnt > 0) {
+		curExpPos = s.find_first_of('=');
+	}
+
+	// Evaluates each subexpression within a line, separated by '=' or ';'
+	for (int i = 0; i <= expCnt; i++) {
+		for (int j = prevExpPos + 1; j < curExpPos; j++) {
+
+			// First character must be a digit, '(', or '-' followed by a digit
+			if (j == prevExpPos + 1) {
+				if (!isdigit(s[j]) || s[j] != '(' || (s[j] != '-' && isdigit(s[j + 1]))) return false;
+				if (s[j] = '(')	parenthesisCnt++;
+			}
+			else {
+				if (isdigit(s[j])) {
+					if (isdigit(s[j - 1]) || s[j - 1] == ')') return false;
+				}
+				else if (s[j] == '(') {
+					if (isdigit(s[j - 1]) || s[j - 1] == ')') return false;
+					parenthesisCnt++;
+				}
+				else if (s[j] == ')') {
+					if (parenthesisCnt == 0 || !isdigit(s[j-1]) || s[j-1] != ')') return false;
+					parenthesisCnt--;
+				}
+				else if (s[j] == '-') {
+					if (!isdigit(s[j - 1]) || s[j - 1] != '(' || s[j-1] != ')');
+				}
+				else if (s[j] == '+' || s[j] == '*' || s[j] == '^') {
+					if (!isdigit(s[j - 1]) || s[j - 1] != ')') return false;
+				}
+				else {
+					return false;
+				}
+			}
+
+			// If any unclosed parentheses, invalid
+			if (parenthesisCnt != 0) return false;
+		}
+
+		// Checks for position of next '='
+		prevExpPos = curExpPos;
+		curExpPos = s.find_first_of('=', prevExpPos + 1);
+		if (curExpPos == -1) curExpPos = s.find_first_of(";", prevExpPos + 1);
+		if (curExpPos == -1) curExpPos = s.length();
+	}
+
+	// If expression has not returned false yet, it is valid.
 	return true;
 }
 
 // Evaluates current expression using set domain.
 bool evaluateBool(string s) {
+	int parenthesisCnt = 0, expCnt = 0, prevExpPos = -1, curExpPos = 0;
+
+	// Determines number of '=' in expression
+	expCnt = count(s.begin(), s.end(), '=') + count(s.begin(), s.end(), ';');
+	if (expCnt > 0) {
+		curExpPos = s.find_first_of('=');
+	}
+
+	// Evaluates each subexpression within a line, separated by '=' or ';'
+	for (int i = 0; i <= expCnt; i++) {
+		for (int j = prevExpPos + 1; j < curExpPos; j++) {
+
+			// First character must be a digit, '(', or '-' followed by a digit
+			if (j == prevExpPos + 1) {
+				if (s[j] != '0' || s[j] != '1' || s[j] != '(') return false;
+				if (s[j] = '(')	parenthesisCnt++;
+			}
+			else {
+				if (s[j] == '0' || s[j] == '1') {
+					if (s[j - 1] == '0' || s[j - 1] == '1' || s[j - 1] == ')') return false;
+				}
+				else if (s[j] == '(') {
+					if (s[j-1] != '(' || s[j - 1] != '+' || s[j - 1] != '*') return false;
+					parenthesisCnt++;
+				}
+				else if (s[j] == ')') {
+					if (parenthesisCnt == 0 || s[j - 1] != '0' || s[j-1] != '1' || s[j - 1] != ')') return false;
+					parenthesisCnt--;
+				}
+				else if (s[j] == '+' || s[j] == '*') {
+					if (!isdigit(s[j - 1]) || s[j - 1] != ')') return false;
+				}
+				else {
+					return false;
+				}
+			}
+
+			// If any unclosed parentheses, invalid
+			if (parenthesisCnt != 0) return false;
+		}
+
+		// Checks for position of next '='
+		prevExpPos = curExpPos;
+		curExpPos = s.find_first_of('=', prevExpPos + 1);
+		if (curExpPos == -1) curExpPos = s.find_first_of(";", prevExpPos + 1);
+		if (curExpPos == -1) curExpPos = s.length();
+	}
+
+	// If expression has not returned false yet, it is valid.
 	return true;
 }
 
 // Evaluates current expression using set domain.
 bool evaluateStr(string s) {
+	int parenthesisCnt = 0, expCnt = 0, prevExpPos = -1, curExpPos = 0;
+
+	// Determines number of '=' in expression
+	expCnt = count(s.begin(), s.end(), '=') + count(s.begin(), s.end(), ';');
+	if (expCnt > 0) {
+		curExpPos = s.find_first_of('=');
+	}
+
+	// Evaluates each subexpression within a line, separated by '=' or ';'
+	for (int i = 0; i <= expCnt; i++) {
+		for (int j = prevExpPos + 1; j < curExpPos; j++) {
+
+			// First character must be a digit, '(', or '-' followed by a digit
+			if (j == prevExpPos + 1) {
+				if (!isdigit(s[j]) || s[j] != '(') return false;
+				if (s[j] = '(')	parenthesisCnt++;
+			}
+			else {
+				if (isdigit(s[j])) {
+					if (isdigit(s[j]) || s[j - 1] == ')') return false;
+				}
+				else if (s[j] == '(') {
+					if (s[j - 1] != '(' || s[j - 1] != '+' || s[j - 1] != '*') return false;
+					parenthesisCnt++;
+				}
+				else if (s[j] == ')') {
+					if (parenthesisCnt == 0 || !isdigit(s[j]) || s[j - 1] != ')') return false;
+					parenthesisCnt--;
+				}
+				else if (s[j] == '+' || s[j] == '*') {
+					if (!isdigit(s[j - 1]) || s[j - 1] != ')') return false;
+				}
+				else {
+					return false;
+				}
+			}
+
+			// If any unclosed parentheses, invalid
+			if (parenthesisCnt != 0) return false;
+		}
+
+		// Checks for position of next '='
+		prevExpPos = curExpPos;
+		curExpPos = s.find_first_of('=', prevExpPos + 1);
+		if (curExpPos == -1) curExpPos = s.find_first_of(";", prevExpPos + 1);
+		if (curExpPos == -1) curExpPos = s.length();
+	}
+
+	// If expression has not returned false yet, it is valid.
 	return true;
 }
 
