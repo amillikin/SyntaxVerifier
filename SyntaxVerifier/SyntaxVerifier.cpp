@@ -1,5 +1,5 @@
 /********************************************************************************************
-*										SyntaxVerifier.cpp 									*
+*									SyntaxVerifier.cpp 										*
 *																							*
 *	DESCRIPTION: Verifies correct syntax in a document instance structure.					*
 *																							*
@@ -34,16 +34,17 @@ static inline string &trim(string &s) {
 	return s;
 }
 
-
-
 // Evaluates current expression using set domain.
 bool evaluateSet(string s) {
 	int parenthesisCnt = 0, bracketCnt = 0, eqCnt = 0, prevEqPos = -1, curEqPos = 0;
 
+	// Determines number of '=' in expression
 	eqCnt = count(s.begin(), s.end(), '=');
 	if (eqCnt > 0) {
 		curEqPos = s.find_first_of('=');
 	}
+
+	// Evaluates each subexpression within a line, separated by '='
 	for (int i = 0; i <= eqCnt; i++) {
 		for (int j = prevEqPos+1; j < curEqPos; j++) {
 
@@ -63,45 +64,58 @@ bool evaluateSet(string s) {
 					}
 				}
 			}
-
-			if (isalnum(s[j])) {
-				
-			}
-			else if (s[j] == '(') {
-
-			}
-			else if (s[j] == ')') {
-				if (parenthesisCnt == 0 || s[j-1] == '+' || s[j-1] == '*' || s[j-1] == ',') {
-					return false;
-				}
-			}
-			else if (s[j] == '{') {
-
-			}
-			else if (s[j] == '}') {
-				if (bracketCnt == 0 || s[j - 1] == '+' || s[j - 1] == '*' || s[j - 1] == ',') {
-					return false;
-				}
-			}
-			else if (s[j] == ',') {
-
-			}
-			else if (s[j] == '+' || s[j] == '*') {
-
-			}
 			else {
-				return false;
+
+				if (isalnum(s[j])) {
+					if (isalnum(s[j - 1]) || s[j - 1] == ')' || s[j - 1] == '}')
+						return false;
+				}
+				else if (s[j] == '(') {
+
+					parenthesisCnt++;
+				}
+				else if (s[j] == ')') {
+					if (parenthesisCnt == 0 || s[j - 1] == '+' || s[j - 1] == '*' || s[j - 1] == ',')
+						return false;
+					parenthesisCnt--;
+				}
+				else if (s[j] == '{') {
+
+					bracketCnt++;
+				}
+				else if (s[j] == '}') {
+					if (bracketCnt == 0 || s[j - 1] == '+' || s[j - 1] == '*' || s[j - 1] == ',')
+						return false;
+					bracketCnt--;
+				}
+				else if (s[j] == ',') {
+					if (!isalnum(s[j - 1]))
+						return false;
+				}
+				else if (s[j] == '+' || s[j] == '*') {
+					if (!isalnum(s[j - 1]) || s[j - 1] == ')' || s[j - 1] == '}')
+						return false;
+				}
+				else {
+					return false;
+				}
 			}
 		}
+
+		// If any unclosed parentheses or bracket, invalid
 		if (parenthesisCnt != 0 || bracketCnt != 0) {
 			return false;
 		}
+
+		// Checks for position of next '='
 		prevEqPos = curEqPos;
 		curEqPos = s.find_first_of('=', prevEqPos+1);
 		if (curEqPos == -1) {
 			curEqPos = s.length();
 		}
 	}
+
+	// If expression has not returned false yet, it is valid.
 	return true;
 }
 
@@ -164,10 +178,10 @@ string verify(string s) {
 		}
 
 		if (valid) {
-			return "The following expression is valid: ";
+			return "The following expression is valid in the " + domainStack.top() + " domain: ";
 		}
 		else {
-			return "The following expression is invalid: ";
+			return "The following expression is invalid in the " + domainStack.top() + " domain: ";
 		}
 	}
 }
