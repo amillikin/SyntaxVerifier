@@ -61,11 +61,11 @@ bool evaluateSet(string s) {
 				}
 			}
 			else {
-				if (isalnum(s[j])) {
-					if (s[j - 1] != '{' || s[j - 1] != ',' || (bracketCnt == 0 && s[j - 1] == ',')) return false;
+				if (isalnum(s[j]) > 0) {
+					if (s[j - 1] != '{' && s[j - 1] != ',' && (bracketCnt == 0 && s[j - 1] == ',')) return false;
 				}
 				else if (s[j] == '(') {
-					if (s[j - 1] != '+' || s[j - 1] != '*') return false;
+					if (s[j - 1] != '+' && s[j - 1] != '*') return false;
 					parenthesisCnt++;
 				}
 				else if (s[j] == ')') {
@@ -73,27 +73,28 @@ bool evaluateSet(string s) {
 					parenthesisCnt--;
 				}
 				else if (s[j] == '{') {
-					if (s[j - 1] != '+' || s[j - 1] != '*' || s[j - 1] != '(') return false;
+					if (s[j - 1] != '+' && s[j - 1] != '*' && s[j - 1] != '(') return false;
 					bracketCnt++;
 				}
 				else if (s[j] == '}') {
-					if (bracketCnt == 0 || !isalnum(s[j - 1])) return false;
+					if (bracketCnt == 0 || (isalnum(s[j - 1]) == 0)) return false;
 					bracketCnt--;
 				}
 				else if (s[j] == ',') {
-					if (!isalnum(s[j - 1])) return false;
+					if (isalnum(s[j - 1]) == 0) return false;
 				}
 				else if (s[j] == '+' || s[j] == '*') {
-					if (s[j - 1] != ')' || s[j - 1] != '}')	return false;
+					if (s[j - 1] != ')' && s[j - 1] != '}')	return false;
 				}
 				else {
 					return false;
 				}
 			}
-
-			// If any unclosed parentheses or bracket or did not end with ')' or '}', invalid
-			if (parenthesisCnt != 0 || bracketCnt != 0 || s[j] != ')' || s[j] != '}') return false;
 		}
+
+		// If any unclosed parentheses or bracket or did not end with ')' or '}', invalid
+		cout << s[s.length()] << endl;
+		if (parenthesisCnt != 0 || bracketCnt != 0 || (s.back() != ')' && s.back() != '}')) return false;
 
 		// Checks for position of next '='
 		prevExpPos = curExpPos;
@@ -122,35 +123,35 @@ bool evaluateAlg(string s) {
 
 			// First character must be a digit, '(', or '-' followed by a digit
 			if (j == prevExpPos + 1) {
-				if (!isdigit(s[j]) || s[j] != '(' || (s[j] != '-' && isdigit(s[j + 1]))) return false;
-				if (s[j] = '(')	parenthesisCnt++;
+				if (isdigit(s[j]) == 0 && s[j] != '(' && (s[j] != '-' && (isdigit(s[j + 1]) > 0))) return false;
+				if (s[j] == '(')	parenthesisCnt++;
 			}
 			else {
-				if (isdigit(s[j])) {
-					if (isdigit(s[j - 1]) || s[j - 1] == ')') return false;
+				if (isdigit(s[j]) > 0) {
+					if ((isdigit(s[j - 1]) > 0) && s[j - 1] == ')') return false;
 				}
 				else if (s[j] == '(') {
-					if (isdigit(s[j - 1]) || s[j - 1] == ')') return false;
+					if ((isdigit(s[j - 1]) > 0) && s[j - 1] == ')') return false;
 					parenthesisCnt++;
 				}
 				else if (s[j] == ')') {
-					if (parenthesisCnt == 0 || !isdigit(s[j-1]) || s[j-1] != ')') return false;
+					if (parenthesisCnt == 0 && (isdigit(s[j-1]) == 0 ) && s[j-1] != ')') return false;
 					parenthesisCnt--;
 				}
 				else if (s[j] == '-') {
-					if (!isdigit(s[j - 1]) || s[j - 1] != '(' || s[j-1] != ')');
+					if ((isdigit(s[j - 1]) == 0) && s[j - 1] != '(' && s[j-1] != ')');
 				}
 				else if (s[j] == '+' || s[j] == '*' || s[j] == '^') {
-					if (!isdigit(s[j - 1]) || s[j - 1] != ')') return false;
+					if ((isdigit(s[j - 1]) == 0) && s[j - 1] != ')') return false;
 				}
 				else {
 					return false;
 				}
 			}
-
-			// If any unclosed parentheses, invalid
-			if (parenthesisCnt != 0) return false;
 		}
+
+		// Checks conditions at end of expression to determine final validity
+		if (parenthesisCnt != 0 || (s.back() != ')' && isdigit(s.back()) == 0)) return false;
 
 		// Checks for position of next '='
 		prevExpPos = curExpPos;
@@ -179,32 +180,32 @@ bool evaluateBool(string s) {
 
 			// First character must be a digit, '(', or '-' followed by a digit
 			if (j == prevExpPos + 1) {
-				if (s[j] != '0' || s[j] != '1' || s[j] != '(') return false;
-				if (s[j] = '(')	parenthesisCnt++;
+				if (s[j] != '0' && s[j] != '1' && s[j] != '(') return false;
+				if (s[j] == '(')	parenthesisCnt++;
 			}
 			else {
 				if (s[j] == '0' || s[j] == '1') {
 					if (s[j - 1] == '0' || s[j - 1] == '1' || s[j - 1] == ')') return false;
 				}
 				else if (s[j] == '(') {
-					if (s[j-1] != '(' || s[j - 1] != '+' || s[j - 1] != '*') return false;
+					if (s[j-1] != '(' && s[j - 1] != '+' && s[j - 1] != '*') return false;
 					parenthesisCnt++;
 				}
 				else if (s[j] == ')') {
-					if (parenthesisCnt == 0 || s[j - 1] != '0' || s[j-1] != '1' || s[j - 1] != ')') return false;
+					if (parenthesisCnt == 0 || (s[j - 1] != '0' && s[j-1] != '1' && s[j - 1] != ')')) return false;
 					parenthesisCnt--;
 				}
 				else if (s[j] == '+' || s[j] == '*') {
-					if (!isdigit(s[j - 1]) || s[j - 1] != ')') return false;
+					if ((isdigit(s[j - 1]) == 0) && s[j - 1] != ')') return false;
 				}
 				else {
 					return false;
 				}
 			}
-
-			// If any unclosed parentheses, invalid
-			if (parenthesisCnt != 0) return false;
 		}
+
+		// Checks conditions at end of expression to determine final validity
+		if (parenthesisCnt != 0 || (s.back() != ')' && isdigit(s.back()) == 0)) return false;
 
 		// Checks for position of next '='
 		prevExpPos = curExpPos;
@@ -233,32 +234,32 @@ bool evaluateStr(string s) {
 
 			// First character must be a digit, '(', or '-' followed by a digit
 			if (j == prevExpPos + 1) {
-				if (!isdigit(s[j]) || s[j] != '(') return false;
-				if (s[j] = '(')	parenthesisCnt++;
+				if ((isdigit(s[j]) == 0) && s[j] != '(') return false;
+				if (s[j] == '(') parenthesisCnt++;
 			}
 			else {
-				if (isdigit(s[j])) {
-					if (isdigit(s[j]) || s[j - 1] == ')') return false;
+				if (isdigit(s[j]) > 0) {
+					if ((isdigit(s[j-1]) > 0) || s[j - 1] == ')') return false;
 				}
 				else if (s[j] == '(') {
-					if (s[j - 1] != '(' || s[j - 1] != '+' || s[j - 1] != '*') return false;
+					if (s[j - 1] != '(' && s[j - 1] != '+' && s[j - 1] != '*') return false;
 					parenthesisCnt++;
 				}
 				else if (s[j] == ')') {
-					if (parenthesisCnt == 0 || !isdigit(s[j]) || s[j - 1] != ')') return false;
+					if (parenthesisCnt == 0 || ((isdigit(s[j - 1]) == 0) && s[j - 1] != ')')) return false;
 					parenthesisCnt--;
 				}
 				else if (s[j] == '+' || s[j] == '*') {
-					if (!isdigit(s[j - 1]) || s[j - 1] != ')') return false;
+					if ((isdigit(s[j - 1]) == 0) && s[j - 1] != ')') return false;
 				}
 				else {
 					return false;
 				}
 			}
-
-			// If any unclosed parentheses, invalid
-			if (parenthesisCnt != 0) return false;
 		}
+
+		// Checks conditions at end of expression to determine final validity
+		if (parenthesisCnt != 0 || (s.back() != ')' && isdigit(s.back()) == 0)) return false;
 
 		// Checks for position of next '='
 		prevExpPos = curExpPos;
