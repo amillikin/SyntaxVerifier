@@ -36,7 +36,7 @@ static inline string &trim(string &s) {
 
 // Evaluates current expression using set domain.
 bool evaluateSet(string s) {
-	int parenthesisCnt = 0, bracketCnt = 0, expCnt = 0, prevExpPos = -1, curExpPos = 0;
+	int parenthesisCnt = 0, bracketCnt = 0, expCnt = 0, prevExpPos = -1, curExpPos = 0, semiPos = 0, eqPos = 0;
 
 	// Determines number of '=' in expression
 	expCnt = count(s.begin(), s.end(), '=') + count(s.begin(), s.end(), ';');
@@ -96,11 +96,27 @@ bool evaluateSet(string s) {
 		cout << s[s.length()] << endl;
 		if (parenthesisCnt != 0 || bracketCnt != 0 || (s.back() != ')' && s.back() != '}')) return false;
 
-		// Checks for position of next '='
+		// Checks for position of next '=' or ";"
 		prevExpPos = curExpPos;
-		curExpPos = s.find_first_of('=', prevExpPos+1);
-		if (curExpPos == -1) curExpPos = s.find_first_of(";", prevExpPos + 1);
-		if (curExpPos == -1) curExpPos = s.length();
+		eqPos = s.find_first_of('=', prevExpPos + 1);
+		semiPos = s.find_first_of(';', prevExpPos + 1);
+		if (eqPos != -1 && semiPos != -1) {
+			if (eqPos < semiPos) {
+				curExpPos = eqPos;
+			}
+			else {
+				curExpPos = semiPos;
+			}
+		}
+		else if (eqPos != -1 && semiPos == -1) {
+			curExpPos = eqPos;
+		}
+		else if (eqPos == -1 && semiPos != -1) {
+			curExpPos = semiPos;
+		}
+		else {
+			curExpPos = s.length();
+		}
 	}
 
 	// If expression has not returned false yet, it is valid.
@@ -109,7 +125,7 @@ bool evaluateSet(string s) {
 
 // Evaluates current expression using set domain.
 bool evaluateAlg(string s) {
-	int parenthesisCnt = 0, expCnt = 0, prevExpPos = -1, curExpPos = 0;
+	int parenthesisCnt = 0, expCnt = 0, prevExpPos = -1, curExpPos = 0, semiPos = 0, eqPos = 0;
 
 	// Determines number of '=' in expression
 	expCnt = count(s.begin(), s.end(), '=') + count(s.begin(), s.end(), ';');
@@ -153,11 +169,27 @@ bool evaluateAlg(string s) {
 		// Checks conditions at end of expression to determine final validity
 		if (parenthesisCnt != 0 || (s.back() != ')' && isdigit(s.back()) == 0)) return false;
 
-		// Checks for position of next '='
+		// Checks for position of next '=' or ";"
 		prevExpPos = curExpPos;
-		curExpPos = s.find_first_of('=', prevExpPos + 1);
-		if (curExpPos == -1) curExpPos = s.find_first_of(";", prevExpPos + 1);
-		if (curExpPos == -1) curExpPos = s.length();
+		eqPos = s.find_first_of('=', prevExpPos + 1);
+		semiPos = s.find_first_of(';', prevExpPos + 1);
+		if (eqPos != -1 && semiPos != -1) {
+			if (eqPos < semiPos) {
+				curExpPos = eqPos;
+			}
+			else {
+				curExpPos = semiPos;
+			}
+		}
+		else if (eqPos != -1 && semiPos == -1) {
+			curExpPos = eqPos;
+		}
+		else if (eqPos == -1 && semiPos != -1) {
+			curExpPos = semiPos;
+		}
+		else {
+			curExpPos = s.length();
+		}
 	}
 
 	// If expression has not returned false yet, it is valid.
@@ -166,7 +198,7 @@ bool evaluateAlg(string s) {
 
 // Evaluates current expression using set domain.
 bool evaluateBool(string s) {
-	int parenthesisCnt = 0, expCnt = 0, prevExpPos = -1, curExpPos = 0;
+	int parenthesisCnt = 0, expCnt = 0, prevExpPos = -1, curExpPos = 0, semiPos = 0, eqPos = 0;
 
 	// Determines number of '=' in expression
 	expCnt = count(s.begin(), s.end(), '=') + count(s.begin(), s.end(), ';');
@@ -207,11 +239,27 @@ bool evaluateBool(string s) {
 		// Checks conditions at end of expression to determine final validity
 		if (parenthesisCnt != 0 || (s.back() != ')' && isdigit(s.back()) == 0)) return false;
 
-		// Checks for position of next '='
+		// Checks for position of next '=' or ";"
 		prevExpPos = curExpPos;
-		curExpPos = s.find_first_of('=', prevExpPos + 1);
-		if (curExpPos == -1) curExpPos = s.find_first_of(";", prevExpPos + 1);
-		if (curExpPos == -1) curExpPos = s.length();
+		eqPos = s.find_first_of('=', prevExpPos + 1);
+		semiPos = s.find_first_of(';', prevExpPos + 1);
+		if (eqPos != -1 && semiPos != -1) {
+			if (eqPos < semiPos) {
+				curExpPos = eqPos;
+			}
+			else {
+				curExpPos = semiPos;
+			}
+		}
+		else if (eqPos != -1 && semiPos == -1) {
+			curExpPos = eqPos;
+		}
+		else if (eqPos == -1 && semiPos != -1) {
+			curExpPos = semiPos;
+		}
+		else {
+			curExpPos = s.length();
+		}
 	}
 
 	// If expression has not returned false yet, it is valid.
@@ -220,7 +268,7 @@ bool evaluateBool(string s) {
 
 // Evaluates current expression using set domain.
 bool evaluateStr(string s) {
-	int parenthesisCnt = 0, expCnt = 0, prevExpPos = -1, curExpPos = 0;
+	int parenthesisCnt = 0, expCnt = 0, prevExpPos = -1, curExpPos = 0, semiPos = 0, eqPos = 0;
 
 	// Determines number of '=' in expression
 	expCnt = count(s.begin(), s.end(), '=') + count(s.begin(), s.end(), ';');
@@ -261,11 +309,27 @@ bool evaluateStr(string s) {
 		// Checks conditions at end of expression to determine final validity
 		if (parenthesisCnt != 0 || (s.back() != ')' && isdigit(s.back()) == 0)) return false;
 
-		// Checks for position of next '='
+		// Checks for position of next '=' or ";"
 		prevExpPos = curExpPos;
-		curExpPos = s.find_first_of('=', prevExpPos + 1);
-		if (curExpPos == -1) curExpPos = s.find_first_of(";", prevExpPos + 1);
-		if (curExpPos == -1) curExpPos = s.length();
+		eqPos = s.find_first_of('=', prevExpPos + 1);
+		semiPos = s.find_first_of(';', prevExpPos + 1);
+		if (eqPos != -1 && semiPos != -1) {
+			if (eqPos < semiPos) {
+				curExpPos = eqPos;
+			}
+			else {
+				curExpPos = semiPos;
+			}
+		}
+		else if (eqPos != -1 && semiPos == -1) {
+			curExpPos = eqPos;
+		}
+		else if (eqPos == -1 && semiPos != -1) {
+			curExpPos = semiPos;
+		}
+		else {
+			curExpPos = s.length();
+		}
 	}
 
 	// If expression has not returned false yet, it is valid.
