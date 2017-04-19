@@ -93,7 +93,6 @@ bool evaluateSet(string s) {
 		}
 
 		// If any unclosed parentheses or bracket or did not end with ')' or '}', invalid
-		cout << s[s.length()] << endl;
 		if (parenthesisCnt != 0 || bracketCnt != 0 || (s.back() != ')' && s.back() != '}')) return false;
 
 		// Checks for position of next '=' or ";"
@@ -394,8 +393,6 @@ void prompt()
 	cout << "Accepted input: SyntaxVerifier <infile> <outfile>" << endl;
 }
 int main(int argc, char* argv[]) {
-	clock_t startTime = clock();
-	double secondsElapsed;
 	vector<string> memory;
 	string line;
 
@@ -445,10 +442,6 @@ int main(int argc, char* argv[]) {
 			}
 		}
 	}
-
-	secondsElapsed = (clock() - startTime) / CLOCKS_PER_SEC;
-	cout << fixed << setprecision(3);
-	cout << "Runtime: " << secondsElapsed << endl;
 
 	EXIT_SUCCESS;
 }
