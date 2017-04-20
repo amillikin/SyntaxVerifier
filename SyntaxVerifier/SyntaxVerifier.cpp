@@ -425,12 +425,12 @@ string verify(string s) {
 
 	// Checks if domain start/end, else evaluates expression at top of stack
 	if (s.substr(0, 1) == "<" && s.substr(s.length()-1, 1) == ">") {
-		s = trim(s.substr(1, s.length() - 2));
-		if (s == " sets " || s == " algebra " || s == " boolean " || s == " strings ") {
+		if (s == "< sets >" || s == "< algebra >" || s == "< boolean >" || s == "< strings >") {
+			s = trim(s.substr(1, s.length() - 2));
 			domainStack.push(s);
 			return "";
 		}
-		else if (s == "/") {
+		else if (s == "</>") {
 			domainStack.pop();
 			return "";
 		}
@@ -491,7 +491,7 @@ int main() {
 		inFile.open(strIn.c_str(), ios::in);
 	}
 
-	// Opens out file, checks if error.
+	//// Opens out file, checks if error.
 	cout << "Please provide output file: ";
 	getline(cin, strIn);
 	outFile.open(strIn.c_str(), ios::out);
