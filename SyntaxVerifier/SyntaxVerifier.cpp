@@ -473,34 +473,33 @@ string verify(string s) {
 
 void prompt()
 {
-	cout << "Welcome to Aaron and Ben's Expression Syntax Verifier! Analyzes files and outputs ." << endl;
-	cout << "Accepted input: SyntaxVerifier <infile> <outfile>" << endl;
+	cout << "Welcome to Aaron and Ben's Expression Syntax Verifier! Analyzes files and outputs validity of syntax for each line." << endl;
 }
-int main(int argc, char* argv[]) {
+int main() {
 	vector<string> memory;
-	string line;
-
-	// Verifies correct number of parameters provided
-	if (argc != 3) {
-		cout << "Incorrect number of arguments supplied." << endl;
-		prompt();
-		return EXIT_FAILURE;
-	}
-
+	string line, strIn;
+	prompt();
+	
 	// Opens in file, checks if error.
-	inFile.open(argv[1], ios::in);
-	if (!inFile) {
-		cout << "Can't open input file " << argv[2] << endl;
-		prompt();
-		return EXIT_FAILURE;
+	cout << "Please provide file to be verified: ";
+	getline(cin, strIn);
+	inFile.open(strIn.c_str(), ios::in);
+	while (!inFile) {
+		cout << "Can't open input file: " << strIn << endl;
+		cout << "Please provide file to be verified: ";
+		getline(cin, strIn);
+		inFile.open(strIn.c_str(), ios::in);
 	}
 
 	// Opens out file, checks if error.
-	outFile.open(argv[2], ios::out);
-	if (!outFile) {
-		cout << "Can't open output file " << argv[3] << endl;
-		prompt();
-		return EXIT_FAILURE;
+	cout << "Please provide output file: ";
+	getline(cin, strIn);
+	outFile.open(strIn.c_str(), ios::out);
+	while (!outFile) {
+		cout << "Can't open output file: " << strIn << endl;
+		cout << "Please provide output file: ";
+		getline(cin, strIn);
+		outFile.open(strIn.c_str(), ios::out);
 	}
 
 	// Reads file into string vector
