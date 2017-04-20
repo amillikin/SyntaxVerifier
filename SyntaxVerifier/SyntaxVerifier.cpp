@@ -65,6 +65,8 @@ bool evaluateSet(string s) {
 
 	// Evaluates each subexpression within a line, separated by '=' or ';'
 	for (int i = 0; i <= expCnt; i++) {
+		// Must have something in an expression, return false otherwise
+		if (prevExpPos + 1 == curExpPos) return false;
 		for (int j = prevExpPos + 1; j < curExpPos; j++) {
 
 			// First character must be  '(' or '{'
@@ -172,6 +174,8 @@ bool evaluateAlg(string s) {
 
 	// Evaluates each subexpression within a line, separated by '=' or ';'
 	for (int i = 0; i <= expCnt; i++) {
+		// Must have something in an expression, return false otherwise
+		if (prevExpPos + 1 == curExpPos) return false;
 		for (int j = prevExpPos + 1; j < curExpPos; j++) {
 
 			// First character must be a digit, '(', or '-' followed by a digit
@@ -264,6 +268,8 @@ bool evaluateBool(string s) {
 
 	// Evaluates each subexpression within a line, separated by '=' or ';'
 	for (int i = 0; i <= expCnt; i++) {
+		// Must have something in an expression, return false otherwise
+		if (prevExpPos + 1 == curExpPos) return false;
 		for (int j = prevExpPos + 1; j < curExpPos; j++) {
 
 			// First character must be a digit, '(', or '-' followed by a digit
@@ -353,6 +359,8 @@ bool evaluateStr(string s) {
 
 	// Evaluates each subexpression within a line, separated by '=' or ';'
 	for (int i = 0; i <= expCnt; i++) {
+		// Must have something in an expression, return false otherwise
+		if (prevExpPos + 1 == curExpPos) return false;
 		for (int j = prevExpPos + 1; j < curExpPos; j++) {
 
 			// First character must be a digit, '(', or '-' followed by a digit
@@ -417,9 +425,9 @@ string verify(string s) {
 
 	// Checks if domain start/end, else evaluates expression at top of stack
 	if (s.substr(0, 1) == "<" && s.substr(s.length()-1, 1) == ">") {
-		s = s.substr(1, s.length() - 2);
+		s = trim(s.substr(1, s.length() - 2));
 		if (s == " sets " || s == " algebra " || s == " boolean " || s == " strings ") {
-			domainStack.push(trim(s));
+			domainStack.push(s);
 			return "";
 		}
 		else if (s == "/") {
