@@ -42,6 +42,25 @@ bool evaluateSet(string s) {
 	expCnt = count(s.begin(), s.end(), '=') + count(s.begin(), s.end(), ';');
 	if (expCnt > 0) {
 		curExpPos = s.find_first_of('=');
+		eqPos = s.find_first_of('=');
+		semiPos = s.find_first_of(';');
+		if (eqPos != -1 && semiPos != -1) {
+			if (eqPos < semiPos) {
+				curExpPos = eqPos;
+			}
+			else {
+				curExpPos = semiPos;
+			}
+		}
+		else if (eqPos != -1 && semiPos == -1) {
+			curExpPos = eqPos;
+		}
+		else if (eqPos == -1 && semiPos != -1) {
+			curExpPos = semiPos;
+		}
+		else {
+			curExpPos = s.length();
+		}
 	}
 
 	// Evaluates each subexpression within a line, separated by '=' or ';'
@@ -130,6 +149,25 @@ bool evaluateAlg(string s) {
 	expCnt = count(s.begin(), s.end(), '=') + count(s.begin(), s.end(), ';');
 	if (expCnt > 0) {
 		curExpPos = s.find_first_of('=');
+		eqPos = s.find_first_of('=');
+		semiPos = s.find_first_of(';');
+		if (eqPos != -1 && semiPos != -1) {
+			if (eqPos < semiPos) {
+				curExpPos = eqPos;
+			}
+			else {
+				curExpPos = semiPos;
+			}
+		}
+		else if (eqPos != -1 && semiPos == -1) {
+			curExpPos = eqPos;
+		}
+		else if (eqPos == -1 && semiPos != -1) {
+			curExpPos = semiPos;
+		}
+		else {
+			curExpPos = s.length();
+		}
 	}
 
 	// Evaluates each subexpression within a line, separated by '=' or ';'
@@ -203,6 +241,25 @@ bool evaluateBool(string s) {
 	expCnt = count(s.begin(), s.end(), '=') + count(s.begin(), s.end(), ';');
 	if (expCnt > 0) {
 		curExpPos = s.find_first_of('=');
+		eqPos = s.find_first_of('=');
+		semiPos = s.find_first_of(';');
+		if (eqPos != -1 && semiPos != -1) {
+			if (eqPos < semiPos) {
+				curExpPos = eqPos;
+			}
+			else {
+				curExpPos = semiPos;
+			}
+		}
+		else if (eqPos != -1 && semiPos == -1) {
+			curExpPos = eqPos;
+		}
+		else if (eqPos == -1 && semiPos != -1) {
+			curExpPos = semiPos;
+		}
+		else {
+			curExpPos = s.length();
+		}
 	}
 
 	// Evaluates each subexpression within a line, separated by '=' or ';'
@@ -273,6 +330,25 @@ bool evaluateStr(string s) {
 	expCnt = count(s.begin(), s.end(), '=') + count(s.begin(), s.end(), ';');
 	if (expCnt > 0) {
 		curExpPos = s.find_first_of('=');
+		eqPos = s.find_first_of('=');
+		semiPos = s.find_first_of(';');
+		if (eqPos != -1 && semiPos != -1) {
+			if (eqPos < semiPos) {
+				curExpPos = eqPos;
+			}
+			else {
+				curExpPos = semiPos;
+			}
+		}
+		else if (eqPos != -1 && semiPos == -1) {
+			curExpPos = eqPos;
+		}
+		else if (eqPos == -1 && semiPos != -1) {
+			curExpPos = semiPos;
+		}
+		else {
+			curExpPos = s.length();
+		}
 	}
 
 	// Evaluates each subexpression within a line, separated by '=' or ';'
@@ -397,10 +473,10 @@ int main(int argc, char* argv[]) {
 	string line;
 
 	// Verifies correct number of parameters provided
-	if (argc != 2) {
+	if (argc != 3) {
 		cout << "Incorrect number of arguments supplied." << endl;
 		prompt();
-		EXIT_FAILURE;
+		return EXIT_FAILURE;
 	}
 
 	// Opens in file, checks if error.
@@ -408,7 +484,7 @@ int main(int argc, char* argv[]) {
 	if (!inFile) {
 		cout << "Can't open input file " << argv[2] << endl;
 		prompt();
-		EXIT_FAILURE;
+		return EXIT_FAILURE;
 	}
 
 	// Opens out file, checks if error.
@@ -416,7 +492,7 @@ int main(int argc, char* argv[]) {
 	if (!outFile) {
 		cout << "Can't open output file " << argv[3] << endl;
 		prompt();
-		EXIT_FAILURE;
+		return EXIT_FAILURE;
 	}
 
 	// Reads file into string vector
@@ -434,7 +510,7 @@ int main(int argc, char* argv[]) {
 			// otherwise writes evaluation to out file
 			if (line.substr(0, 5) == "Error") {
 				cout << line << endl;
-				EXIT_FAILURE;
+				return EXIT_FAILURE;
 			}
 			else {
 				line = line + *i;
@@ -443,6 +519,6 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-	EXIT_SUCCESS;
+	return EXIT_SUCCESS;
 }
 
